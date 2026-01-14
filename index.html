@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CHECK LIST - REGISTRO DE OCORRÊNCIA | N.</title>
+    <script src="https://cdn.jsdelivr.net/npm/emailjs-com@3/dist/email.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <style>
+        :root{ --primary:#003366; --secondary:#005b96; --accent:#e1e8ed; --border:#ccc; --bg:#f0f2f5; }
+        *{box-sizing:border-box}
+        body{ margin:0; padding:20px; background:var(--bg); font-family:Segoe UI,Tahoma,sans-serif; display:flex; justify-content:center; }
+        form{ background:#fff; width:220mm; padding:30px 40px; border-top:8px solid var(--primary); box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        
+        header{ border-bottom:2px solid var(--primary); padding-bottom:16px; margin-bottom:22px; }
+        
+        .header-title-container { 
+            display: flex; align-items: center; justify-content: center; gap: 15px; margin-bottom: 20px; white-space: nowrap;
+        }
+        .logo{ font-size:45px; font-weight:900; line-height: 1; }
+        .logo-n{color:#003366} .logo-dot{color:#ff8c00}
+        header h1{ font-size:22px; color:var(--secondary); text-transform:uppercase; margin: 0; font-weight: 900; }
+
+        .header-dates { display: flex; justify-content: center; gap: 30px; margin-bottom: 20px; }
+        .header-dates div { width: 150px; }
+
+        .instrucoes { background: #fffbe6; border: 1px solid #ffe58f; padding: 15px; border-radius: 4px; font-size: 11px; color: #856404; line-height: 1.6; }
+        .instrucoes-titulo { font-weight: bold; text-align: center; display: block; margin-bottom: 8px; text-decoration: underline; }
+        .instrucoes div { margin-bottom: 4px; }
+
+        .section-title{ background:var(--accent); padding:8px 12px; font-weight:bold; text-transform:uppercase; border-left:5px solid var(--secondary); margin:20px 0 10px; font-size:12px; }
+        label{ font-size:10px; font-weight:600; margin-bottom:3px; display:block; text-transform:uppercase; }
+        input, select{ width:100%; padding:6px; border:1px solid var(--border); border-radius:4px; font-size:11px; }
+        
+        .grid-cliente{ display:grid; grid-template-columns:0.4fr 1fr 1fr; gap:12px; margin-bottom:12px; }
+        .grid-logistica{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
+        
+        .item { display: grid; grid-template-columns: 0.7fr 1.2fr 1.2fr 0.5fr 0.5fr 1fr 1fr 40px; gap: 8px; padding: 12px 10px; border-bottom: 1px solid #eee; background: #fdfdfd; align-items: end; }
+        .input-total-linha { background: #f8f9fa; font-weight: bold; border: 1px solid #dee2e6; color: var(--primary); }
+        
+        .btn-remove { background: #ff4d4d; color: white; border: none; border-radius: 4px; width: 32px; height: 28px; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        
+        .resumo-container { margin-top: 20px; padding: 15px; background: #f8fafc; border: 2px solid var(--accent); border-radius: 8px; display: flex; justify-content: flex-end; gap: 30px; }
+        .resumo-box { text-align: right; }
+        .resumo-label { font-size: 10px; color: #64748b; font-weight: bold; text-transform: uppercase; }
+        .resumo-valor { font-size: 18px; font-weight: bold; color: var(--primary); display: block; }
+        
+        .actions{ margin-top:28px; display:flex; flex-direction: column; align-items:center; gap:15px; }
+        .buttons-row { display: flex; gap: 18px; align-items: center; }
+        .upload-box { background: #fff; border: 1px dashed var(--secondary); padding: 10px; border-radius: 8px; text-align: center; }
+        
+        button.main-btn { padding:12px 28px; border:none; border-radius:50px; cursor:pointer; font-size:14px; font-weight: bold; }
+        .primary{background:#003366;color:#fff} .secondary{background:#6c757d;color:#fff}
+        .btn-add { margin-top: 10px; background: #28a745; color: #fff; padding: 10px 20px; font-size: 12px; border-radius: 4px; border:none; cursor:pointer; }
+        .printing .no-pdf { display: none !important; }
+    </style>
+</head>
+<body>
+
+<form id="formulario" onsubmit="enviarOcorrencia(event)">
+    <header>
+        <div class="header-title-container">
+            <div class="logo"><span class="logo-n">N</span><span class="logo-dot">.</span></div>
+            <h1>CHECK LIST - REGISTRO DE OCORRÊNCIA NA ENTREGA</h1>
+        </div>
+
+        <div class="header-dates">
+            <div><label>Data Ocorrência</label><input type="date" id="data_ocorrencia" required></div>
+            <div><label>Data Envio</label><input type="date" id="data_envio" required></div>
+        </div>
+
+        <div class="instrucoes">
+            <span class="instrucoes-titulo">INSTRUÇÕES PARA PREENCHIMENTO:</span>
+            <div>1. Todos os campos devem ser preenchidos conforme indicações;</div>
+            <div>2. Somente será aceito o check list com datas inferiores a 30 dias (MDI) e 90 dias (EXP) da emissão da Nota Fiscal;</div>
+            <div>3. A análise será feita em até 5 dias úteis a partir da data do recebimento do check list;</div>
+            <div>4. O não cumprimento das instruções acima implicará na recusa do mesmo; Caso haja divergências o reclamante tem 5 dias úteis para retificações.</div>
+        </div>
+    </header>
+
+    <div class="section-title">Dados do Cliente e Transporte</div>
+    <div class="grid-cliente">
+        <div><label>DT</label><input id="dt" required></div>
+        <div><label>Cliente</label><input id="cliente" required></div>
+        <div><label>Transportadora</label><input id="transportadora" required></div>
+    </div>
+
+    <div class="grid-logistica">
+        <div><label>Tipo de Frete</label><select id="tipo_frete" required><option value="">Selecione</option><option>CIF</option><option>FOB</option><option>EXP</option><option>Frete G</option></select></div>
+        <div><label>Tipo de Veículo</label><select id="tipo_veiculo" required><option value="">Selecione</option><option>Carreta Baú</option><option>Sider</option><option>Toco</option><option>Truck</option><option>VUC</option><option>Van</option></select></div>
+    </div>
+
+    <div class="section-title">Itens da Ocorrência</div>
+    <div id="itens"></div>
+    <button type="button" class="btn-add no-pdf" onclick="addItem()">➕ Adicionar Item</button>
+
+    <div class="resumo-container">
+        <div class="resumo-box"><span class="resumo-label">Total Peças</span><span id="total_qtd" class="resumo-valor">0</span></div>
+        <div class="resumo-box"><span class="resumo-label">Valor Total</span><span id="total_financeiro" class="resumo-valor">R$ 0,00</span></div>
+    </div>
+
+    <div class="actions no-pdf">
+        <div class="upload-box">
+            <label style="color: var(--secondary); margin-bottom: 5px;">📷 Anexar Fotos da Ocorrência (Múltiplas)</label>
+            <input type="file" id="fotos_input" multiple accept="image/*">
+        </div>
+        <div class="buttons-row">
+            <button type="button" class="main-btn secondary" onclick="gerarPDF()">📄 Gerar PDF</button>
+            <button type="submit" class="main-btn primary" id="btnEnviar">📧 Enviar Checklist</button>
+        </div>
+    </div>
+</form>
+
+<script>
+    emailjs.init("8e38EbwlhycluKZKM");
+
+    const CLOUD_NAME = "diuulz9my";
+    const UPLOAD_PRESET = "ocorrencia-carregamento";
+
+    function mascaraMoeda(e) {
+        let valor = e.target.value.replace(/\D/g, "");
+        valor = (valor / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+        e.target.value = valor;
+        calcularTotais();
+    }
+
+    function addItem(){
+        const item = document.createElement("div");
+        item.className = "item";
+        item.innerHTML = `
+            <div><label>NF</label><input name="nf[]" required></div>
+            <div><label>SKU</label><input name="sku[]" required></div>
+            <div><label>Ocorrência</label><select name="tipo_ocorrencia[]" required><option>Sobra</option><option>Falta</option><option>Avaria</option><option>Qualidade</option><option>Devolução</option></select></div>
+            <div><label>Qtd</label><input type="number" name="quantidade[]" required oninput="calcularTotais()"></div>
+            <div><label>Unid</label><select name="unidade[]"><option>CX</option><option>PL</option><option>PÇ</option><option>JG</option></select></div>
+            <div><label>Val. Unit.</label><input name="valor_unitario[]" placeholder="R$ 0,00" required oninput="mascaraMoeda(event)"></div>
+            <div><label>Total Item</label><input name="total_linha[]" class="input-total-linha" readonly value="R$ 0,00"></div>
+            <button type="button" class="btn-remove no-pdf" onclick="this.parentElement.remove(); calcularTotais();">✕</button>
+        `;
+        document.getElementById("itens").appendChild(item);
+    }
+
+    function calcularTotais() {
+        const qtds = document.getElementsByName("quantidade[]");
+        const valores = document.getElementsByName("valor_unitario[]");
+        const totaisLinha = document.getElementsByName("total_linha[]");
+        let tQtd = 0; let tFin = 0;
+        for (let i = 0; i < qtds.length; i++) {
+            const q = parseFloat(qtds[i].value) || 0;
+            const v = parseFloat(valores[i].value.replace(/[R$\s.]/g, '').replace(',', '.')) || 0;
+            const sub = q * v;
+            totaisLinha[i].value = sub.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+            tQtd += q; tFin += sub;
+        }
+        document.getElementById("total_qtd").innerText = tQtd;
+        document.getElementById("total_financeiro").innerText = tFin.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+    }
+
+    function gerarPDF(){
+        const form = document.getElementById("formulario");
+        form.classList.add("printing");
+        html2canvas(form, {scale: 2}).then(canvas => {
+            const { jsPDF } = window.jspdf;
+            const pdf = new jsPDF("p", "mm", "a4");
+            pdf.addImage(canvas.toDataURL("image/png"), "PNG", 5, 10, 200, (canvas.height * 200 / canvas.width));
+            pdf.save(`Checklist_${document.getElementById("dt").value}.pdf`);
+            form.classList.remove("printing");
+        });
+    }
+
+    async function enviarOcorrencia(e){
+        e.preventDefault();
+        const btn = document.getElementById("btnEnviar");
+        const inputFotos = document.getElementById("fotos_input");
+        btn.innerText = "Processando fotos..."; btn.disabled = true;
+
+        let linksHtml = "";
+        if(inputFotos.files.length > 0) {
+            for (let file of inputFotos.files) {
+                const formData = new FormData();
+                formData.append("file", file);
+                formData.append("upload_preset", UPLOAD_PRESET);
+                try {
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: "POST", body: formData });
+                    const data = await res.json();
+                    linksHtml += `<div style="margin-top:5px;"><a href="${data.secure_url}" target="_blank">Visualizar Foto</a></div>`;
+                } catch (err) { console.error("Erro upload", err); }
+            }
+        }
+
+        const templateParams = {
+            data_envio: document.getElementById("data_envio").value,
+            data_ocorrencia: document.getElementById("data_ocorrencia").value,
+            dt: document.getElementById("dt").value,
+            cliente: document.getElementById("cliente").value,
+            transportadora: document.getElementById("transportadora").value,
+            tipo_frete: document.getElementById("tipo_frete").value,
+            tipo_veiculo: document.getElementById("tipo_veiculo").value,
+            total_geral_financeiro: document.getElementById("total_financeiro").innerText,
+            total_geral_pecas: document.getElementById("total_qtd").innerText,
+            fotos_urls: linksHtml || "Nenhuma foto anexada."
+        };
+
+        let itensHtml = "";
+        const nfs = document.getElementsByName("nf[]");
+        const skus = document.getElementsByName("sku[]");
+        const tipos = document.getElementsByName("tipo_ocorrencia[]");
+        const qtds = document.getElementsByName("quantidade[]");
+        const unis = document.getElementsByName("unidade[]");
+        const vals = document.getElementsByName("valor_unitario[]");
+        const tots = document.getElementsByName("total_linha[]");
+
+        for (let i = 0; i < nfs.length; i++) {
+            itensHtml += `<tr>
+                <td style="border:1px solid #ccc; padding:6px; text-align:center;">${nfs[i].value}</td>
+                <td style="border:1px solid #ccc; padding:6px;">${skus[i].value}</td>
+                <td style="border:1px solid #ccc; padding:6px;">${tipos[i].value}</td>
+                <td style="border:1px solid #ccc; padding:6px; text-align:center;">${qtds[i].value} ${unis[i].value}</td>
+                <td style="border:1px solid #ccc; padding:6px; text-align:right;">${vals[i].value}</td>
+                <td style="border:1px solid #ccc; padding:6px; text-align:right;">${tots[i].value}</td>
+            </tr>`;
+        }
+        templateParams.itens_ocorrencia = itensHtml;
+
+        emailjs.send("service_tgq7omd", "template_r7jm90b", templateParams)
+            .then(() => { alert("Enviado com sucesso!"); btn.innerText = "📧 Enviar Checklist"; btn.disabled = false; })
+            .catch((err) => { alert("Erro ao enviar e-mail!"); console.error(err); btn.disabled = false; });
+    }
+    
+    addItem();
+    document.getElementById('data_envio').valueAsDate = new Date();
+</script>
+</body>
+</html>
