@@ -81,11 +81,15 @@
     </header>
 
     <div class="section-title">Dados do Cliente e Transporte</div>
-    <div class="grid-cliente">
-        <div><label>DT</label><input id="dt" required></div>
-        <div><label>Cliente</label><input id="cliente" required></div>
-        <div><label>Transportadora</label><input id="transportadora" required></div>
-    </div>
+   <div class="grid-cliente">
+    <div><label>DT</label><input id="dt" required></div>
+    <div><label>Cliente</label><input id="cliente" required></div>
+    <div><label>Transportadora</label><input id="transportadora" required></div>
+
+    <!-- NOVA LINHA, SEM QUEBRAR REFERÊNCIAS -->
+    <div><label>Email do Solicitante</label><input type="email" id="email_solicitante" required></div>
+</div>
+
 
     <div class="grid-logistica">
         <div><label>Tipo de Frete</label><select id="tipo_frete" required><option value="">Selecione</option><option>CIF</option><option>FOB</option><option>EXP</option><option>Frete G</option></select></div>
@@ -190,18 +194,22 @@
             }
         }
 
-        const templateParams = {
-            data_envio: document.getElementById("data_envio").value,
-            data_ocorrencia: document.getElementById("data_ocorrencia").value,
-            dt: document.getElementById("dt").value,
-            cliente: document.getElementById("cliente").value,
-            transportadora: document.getElementById("transportadora").value,
-            tipo_frete: document.getElementById("tipo_frete").value,
-            tipo_veiculo: document.getElementById("tipo_veiculo").value,
-            total_geral_financeiro: document.getElementById("total_financeiro").innerText,
-            total_geral_pecas: document.getElementById("total_qtd").innerText,
-            fotos_urls: linksHtml || "Nenhuma foto anexada."
-        };
+       const templateParams = {
+    data_envio: document.getElementById("data_envio").value,
+    data_ocorrencia: document.getElementById("data_ocorrencia").value,
+    dt: document.getElementById("dt").value,
+    cliente: document.getElementById("cliente").value,
+    transportadora: document.getElementById("transportadora").value,
+    tipo_frete: document.getElementById("tipo_frete").value,
+    tipo_veiculo: document.getElementById("tipo_veiculo").value,
+
+    email_solicitante: document.getElementById("email_solicitante").value,
+
+    total_geral_financeiro: document.getElementById("total_financeiro").innerText,
+    total_geral_pecas: document.getElementById("total_qtd").innerText,
+    fotos_urls: linksHtml || "Nenhuma foto anexada."
+};
+
 
         let itensHtml = "";
         const nfs = document.getElementsByName("nf[]");
