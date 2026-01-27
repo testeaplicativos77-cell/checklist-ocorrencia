@@ -9,10 +9,10 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 
     <style>
-        :root{ --primary:#003366; --secondary:#005b96; --accent:#e1e8ed; --border:#ccc; --bg:#f0f2f5; }
+        :root{ --primary:#003366; --secondary:#005b96; --accent:#e1e8ed; --border:#ccc; --bg:#f0f2f5; --error:#d32f2f; }
         *{box-sizing:border-box}
-        body{ margin:0; padding:20px; background:var(--bg); font-family:Segoe UI,Tahoma,sans-serif; display:flex; justify-content:center; }
-        form{ background:#fff; width:220mm; padding:30px 40px; border-top:8px solid var(--primary); box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        body{ margin:0; padding:20px; background:var(--bg); font-family:Segoe UI,Tahoma,sans-serif; display:flex; flex-direction: column; align-items:center; }
+        form{ background:#fff; width:220mm; padding:30px 40px; border-top:8px solid var(--primary); box-shadow: 0 0 10px rgba(0,0,0,0.1); margin-bottom: 20px; }
         
         header{ border-bottom:2px solid var(--primary); padding-bottom:16px; margin-bottom:22px; }
         
@@ -37,7 +37,6 @@
         .grid-cliente{ display:grid; grid-template-columns:0.4fr 1fr 1fr; gap:12px; margin-bottom:12px; }
         .grid-logistica{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
         
-        /* Ajustado: Aumentada a coluna de Unidade (de 0.25fr para 0.5fr) */
         .item { display: grid; grid-template-columns: 0.5fr 0.8fr 1.2fr 1fr 0.4fr 0.5fr 0.8fr 0.8fr 40px; gap: 8px; padding: 12px 10px; border-bottom: 1px solid #eee; background: #fdfdfd; align-items: end; }
         .input-total-linha { background: #f8f9fa; font-weight: bold; border: 1px solid #dee2e6; color: var(--primary); }
         
@@ -55,6 +54,13 @@
         button.main-btn { padding:12px 28px; border:none; border-radius:50px; cursor:pointer; font-size:14px; font-weight: bold; }
         .primary{background:#003366;color:#fff} .secondary{background:#6c757d;color:#fff}
         .btn-add { margin-top: 10px; background: #28a745; color: #fff; padding: 10px 20px; font-size: 12px; border-radius: 4px; border:none; cursor:pointer; }
+        
+        /* ESTILO DO SUPORTE - ERRO */
+        .footer-support { width: 220mm; background: #fdecea; border: 1px solid #f5c2c7; padding: 20px; border-radius: 8px; text-align: center; margin-top: 10px; margin-bottom: 40px; }
+        .support-label { font-size: 14px; color: #842029; margin-bottom: 8px; font-weight: bold; text-transform: uppercase; }
+        .support-link { color: #d32f2f; font-weight: 900; text-decoration: none; font-size: 15px; border: 2px solid #d32f2f; padding: 8px 15px; border-radius: 5px; display: inline-block; transition: 0.3s; }
+        .support-link:hover { background: #d32f2f; color: white; }
+
         .printing .no-pdf { display: none !important; }
     </style>
 </head>
@@ -113,6 +119,13 @@
         </div>
     </div>
 </form>
+
+<div class="footer-support no-pdf">
+    <div class="support-label">Erro no envio do formulário. Acione o suporte.</div>
+    <a href="mailto:rodrigo.luis@nadir.com.br?subject=Erro%20no%20Formulário%20de%20Ocorrência" class="support-link">
+        ✉️ rodrigo.luis@nadir.com.br
+    </a>
+</div>
 
 <script>
     emailjs.init("8e38EbwlhycluKZKM");
