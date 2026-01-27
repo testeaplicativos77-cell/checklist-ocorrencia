@@ -37,7 +37,8 @@
         .grid-cliente{ display:grid; grid-template-columns:0.4fr 1fr 1fr; gap:12px; margin-bottom:12px; }
         .grid-logistica{ display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px; }
         
-        .item { display: grid; grid-template-columns: 0.7fr 1.2fr 1.2fr 0.5fr 0.5fr 1fr 1fr 40px; gap: 8px; padding: 12px 10px; border-bottom: 1px solid #eee; background: #fdfdfd; align-items: end; }
+        /* Ajustado: Aumentada a coluna de Unidade (de 0.25fr para 0.5fr) */
+        .item { display: grid; grid-template-columns: 0.5fr 0.8fr 1.2fr 1fr 0.4fr 0.5fr 0.8fr 0.8fr 40px; gap: 8px; padding: 12px 10px; border-bottom: 1px solid #eee; background: #fdfdfd; align-items: end; }
         .input-total-linha { background: #f8f9fa; font-weight: bold; border: 1px solid #dee2e6; color: var(--primary); }
         
         .btn-remove { background: #ff4d4d; color: white; border: none; border-radius: 4px; width: 32px; height: 28px; font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
@@ -85,11 +86,8 @@
     <div><label>DT</label><input id="dt" required></div>
     <div><label>Cliente</label><input id="cliente" required></div>
     <div><label>Transportadora</label><input id="transportadora" required></div>
-
-    <!-- NOVA LINHA, SEM QUEBRAR REFERÊNCIAS -->
     <div><label>Email do Solicitante</label><input type="email" id="email_solicitante" required></div>
 </div>
-
 
     <div class="grid-logistica">
         <div><label>Tipo de Frete</label><select id="tipo_frete" required><option value="">Selecione</option><option>CIF</option><option>FOB</option><option>EXP</option><option>Frete G</option></select></div>
@@ -135,6 +133,7 @@
         item.innerHTML = `
             <div><label>NF</label><input name="nf[]" required></div>
             <div><label>SKU</label><input name="sku[]" required></div>
+            <div><label>Descrição</label><input name="descricao[]" required></div>
             <div><label>Ocorrência</label><select name="tipo_ocorrencia[]" required><option>Sobra</option><option>Falta</option><option>Avaria</option><option>Qualidade</option><option>Devolução</option></select></div>
             <div><label>Qtd</label><input type="number" name="quantidade[]" required oninput="calcularTotais()"></div>
             <div><label>Unid</label><select name="unidade[]"><option>CX</option><option>PL</option><option>PÇ</option><option>JG</option></select></div>
@@ -161,18 +160,6 @@
         document.getElementById("total_financeiro").innerText = tFin.toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
     }
 
-    function gerarPDF(){
-        const form = document.getElementById("formulario");
-        form.classList.add("printing");
-        html2canvas(form, {scale: 2}).then(canvas => {
-            const { jsPDF } = window.jspdf;
-            const pdf = new jsPDF("p", "mm", "a4");
-            pdf.addImage(canvas.toDataURL("image/png"), "PNG", 5, 10, 200, (canvas.height * 200 / canvas.width));
-            pdf.save(`Checklist_${document.getElementById("dt").value}.pdf`);
-            form.classList.remove("printing");
-        });
-    }
-
     async function enviarOcorrencia(e){
         e.preventDefault();
         const btn = document.getElementById("btnEnviar");
@@ -194,25 +181,23 @@
         }
 
        const templateParams = {
-    data_envio: document.getElementById("data_envio").value,
-    data_ocorrencia: document.getElementById("data_ocorrencia").value,
-    dt: document.getElementById("dt").value,
-    cliente: document.getElementById("cliente").value,
-    transportadora: document.getElementById("transportadora").value,
-    tipo_frete: document.getElementById("tipo_frete").value,
-    tipo_veiculo: document.getElementById("tipo_veiculo").value,
-
-    email_solicitante: document.getElementById("email_solicitante").value,
-
-    total_geral_financeiro: document.getElementById("total_financeiro").innerText,
-    total_geral_pecas: document.getElementById("total_qtd").innerText,
-    fotos_urls: linksHtml || "Nenhuma foto anexada."
-};
-
+            data_envio: document.getElementById("data_envio").value,
+            data_ocorrencia: document.getElementById("data_ocorrencia").value,
+            dt: document.getElementById("dt").value,
+            cliente: document.getElementById("cliente").value,
+            transportadora: document.getElementById("transportadora").value,
+            tipo_frete: document.getElementById("tipo_frete").value,
+            tipo_veiculo: document.getElementById("tipo_veiculo").value,
+            email_solicitante: document.getElementById("email_solicitante").value,
+            total_geral_financeiro: document.getElementById("total_financeiro").innerText,
+            total_geral_pecas: document.getElementById("total_qtd").innerText,
+            fotos_urls: linksHtml || "Nenhuma foto anexada."
+        };
 
         let itensHtml = "";
         const nfs = document.getElementsByName("nf[]");
         const skus = document.getElementsByName("sku[]");
+        const descs = document.getElementsByName("descricao[]");
         const tipos = document.getElementsByName("tipo_ocorrencia[]");
         const qtds = document.getElementsByName("quantidade[]");
         const unis = document.getElementsByName("unidade[]");
@@ -223,6 +208,7 @@
             itensHtml += `<tr>
                 <td style="border:1px solid #ccc; padding:6px; text-align:center;">${nfs[i].value}</td>
                 <td style="border:1px solid #ccc; padding:6px;">${skus[i].value}</td>
+                <td style="border:1px solid #ccc; padding:6px;">${descs[i].value}</td>
                 <td style="border:1px solid #ccc; padding:6px;">${tipos[i].value}</td>
                 <td style="border:1px solid #ccc; padding:6px; text-align:center;">${qtds[i].value} ${unis[i].value}</td>
                 <td style="border:1px solid #ccc; padding:6px; text-align:right;">${vals[i].value}</td>
@@ -241,4 +227,3 @@
 </script>
 </body>
 </html>
-
